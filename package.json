@@ -1,0 +1,19 @@
+{
+  "name": "case-013-the-13th-room",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CASE 013: THE 13TH ROOM - First-Person Paranormal Detective Investigation",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite --host --port 8013",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.186.1",
+    "vite": "^8.3.4"
+  }
+}

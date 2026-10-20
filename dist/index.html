@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CASE 013: THE 13TH ROOM | First-Person Paranormal Detective Investigation</title>
+  <link rel="icon" type="image/png" href="/assets/mandala.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Creepster&family=Nosifer&family=Special+Elite&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-CFSb1MZW.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CNS-X5jq.css">
+</head>
+<body>
+  <!-- 3D WebGL Canvas Layer -->
+  <div id="canvas-container"></div>
+
+  <!-- Atmospheric Film Grain & Rain FX -->
+  <div class="vignette-overlay"></div>
+  <div class="rain-fx-overlay"></div>
+
+  <!-- Reticle & Dynamic Context Prompt -->
+  <div class="crosshair-container">
+    <div class="crosshair-dot"></div>
+    <div class="interaction-prompt" id="interaction-prompt">[E] INSPECT</div>
+  </div>
+
+  <!-- Top HUD: Crime Scene Meta & Frozen Time -->
+  <header class="top-hud">
+    <div class="case-indicator">
+      <span class="case-id">CASE 013</span>
+      <span class="chapter-title" id="current-chapter-title">CH 1: THE GATE THAT CLOSED</span>
+      <span class="location-badge" id="hud-location-name">GRAND ENTRANCE COLONNADE</span>
+    </div>
+
+    <div class="clock-watch">
+      <div class="clock-digits">02:13 AM</div>
+      <div class="clock-date">13 JULY 1998 · RURAL RAJASTHAN</div>
+    </div>
+  </header>
+
+  <!-- Bottom HUD: Active Case Objective & Forensic Tools -->
+  <footer class="bottom-hud">
+    <div class="objective-box">
+      <div class="obj-label">CURRENT INVESTIGATION OBJECTIVE</div>
+      <div class="obj-text" id="hud-objective-text">
+        Search the Entrance Hall for the architectural floor plan and examine the 1998 ancestral portrait.
+      </div>
+    </div>
+
+    <div class="quick-toolbar">
+      <button class="tool-pill" id="btn-board">
+        <span class="key-hint">TAB</span>
+        <span>EVIDENCE BOARD</span>
+      </button>
+
+      <button class="tool-pill" id="btn-dossier">
+        <span class="key-hint">P</span>
+        <span>SUSPECT DOSSIER</span>
+      </button>
+
+      <button class="tool-pill" id="btn-tape">
+        <span class="key-hint">T</span>
+        <span>AUDIO RECORDER</span>
+      </button>
+
+      <button class="tool-pill" id="btn-camera">
+        <span class="key-hint">C</span>
+        <span>POLAROID CAMERA</span>
+      </button>
+
+      <button class="tool-pill" id="btn-lantern">
+        <span class="key-hint">L</span>
+        <span>LANTERN</span>
+      </button>
+
+      <button class="tool-pill" id="btn-interior-view">
+        <span class="key-hint">I</span>
+        <span>HAVELI INTERIOR</span>
+      </button>
+
+      <button class="tool-pill" id="resolve-case-btn" style="display: none; background: #88151a; border-color: #ff3b30;">
+        <span class="key-hint">!</span>
+        <span>RESOLVE CASE 013</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Overlays / Detective Modals -->
+  <div id="evidence-board-root" style="display: none;"></div>
+  <div id="suspect-dossier-root" style="display: none;"></div>
+  <div id="cassette-player-root" style="display: none;"></div>
+  <div id="polaroid-camera-root"></div>
+
+  <!-- 3-Layer Object Close-up Inspection Modal -->
+  <div class="clue-inspect-modal" id="inspect-modal" style="display: none;">
+    <div class="modal-card">
+      <button class="modal-close" id="close-inspect-btn">×</button>
+      <div class="modal-header">
+        <span class="modal-icon" id="inspect-icon">🔍</span>
+        <h3 id="inspect-title">OBJECT NAME</h3>
+        <span class="modal-loc" id="inspect-room">LOCATION</span>
+      </div>
+
+      <div id="inspect-image-wrap" style="display: none; text-align: center; margin: 10px 0 16px 0;">
+        <img id="inspect-image" src="" alt="Evidence Close-up" style="max-height: 240px; max-width: 100%; border: 2px solid #8b6508; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.85); object-fit: contain;" />
+      </div>
+
+      <div class="layer-content-box">
+        <div style="margin-bottom: 14px;">
+          <span class="layer-badge physical-badge">PHYSICAL EVIDENCE</span>
+          <p class="layer-text" id="inspect-physical"></p>
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <span class="layer-badge doc-badge">DOCUMENTARY RECORD</span>
+          <p class="layer-text" id="inspect-doc"></p>
+        </div>
+
+        <div>
+          <span class="layer-badge para-badge">PARANORMAL ANOMALY</span>
+          <p class="layer-text eerie-text" id="inspect-para"></p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <span style="font-size: 11px; color: #888; align-self: center; margin-right: auto;">
+          ✓ Recorded to Case 013 Evidence Board [TAB]
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapter Intro / Cliffhanger Modal -->
+  <div class="cinematic-banner" id="chapter-banner-modal" style="display: none;">
+    <div class="chapter-tag" id="banner-tag">CHAPTER 1 OF 5</div>
+    <h1 id="banner-title">The Gate That Closed</h1>
+    <p id="banner-objective">Search the entrance hall for the floor plan and first tape.</p>
+    <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; margin-bottom: 20px;">
+      <em style="color: #ff9999; font-size: 12px;" id="banner-cliffhanger"></em>
+    </div>
+    <button class="cinematic-btn" id="banner-proceed-btn">BEGIN INVESTIGATION</button>
+  </div>
+
+  <!-- Branching Endings Modal -->
+  <div class="ending-screen-overlay" id="ending-modal" style="display: none;">
+    <div class="ending-card">
+      <div class="ending-code" id="ending-code-el">ENDING A</div>
+      <h2 id="ending-title-el">The Truth Is Recorded</h2>
+      <div class="ending-narrative" id="ending-narrative-el"></div>
+      <button class="ending-restart-btn" id="restart-case-btn">RE-INVESTIGATE CASE 013</button>
+    </div>
+  </div>
+
+  <!-- LANDING PAGE OVERLAY (Using 2nd Image: Haveli Exterior at Night) -->
+  <div class="landing-page-overlay" id="landing-page-overlay">
+    <div class="landing-backdrop"></div>
+    <div class="landing-fog-layer"></div>
+    <div class="landing-rain-layer"></div>
+
+    <div class="landing-content">
+      <div class="landing-stamp">RAJASTHAN POLICE ARCHIVES · UNRESOLVED COLD CASE</div>
+      <h1 class="landing-title">CASE 013: THE 13TH ROOM</h1>
+      <div class="landing-sub">First-Person Paranormal Investigation & Detective Mystery · July 1998 / 2026</div>
+
+      <div class="landing-hook">
+        "Twelve rooms are documented. Thirteen are discovered. One person vanished. And the evidence suggests that the missing person never left the house."
+      </div>
+
+      <div class="landing-tape-box">
+        <div class="tape-info">
+          <span class="tape-title">📼 AUDIO DISCOVERY · TDK MICROCASSETTE #013</span>
+          <span class="tape-snippet">"You counted twelve rooms because you were never supposed to find the thirteenth..."</span>
+        </div>
+        <button class="tape-preview-btn" id="landing-play-tape-btn">▶ PLAY AUDIO</button>
+      </div>
+
+      <div class="landing-actions">
+        <button class="landing-enter-btn" id="landing-enter-btn">ENTER THE HAVELI [BEGIN]</button>
+        <button class="landing-sec-btn" id="landing-view-interior-btn">HAVELI INTERIOR ARCHIVE</button>
+        <button class="landing-sec-btn" id="landing-case-brief-btn">CASE DOSSIER & SUSPECTS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HAVELI INTERIOR SHOWCASE MODAL (Using Uploaded 4-Room Interior & Staircase Images) -->
+  <div class="interior-modal-overlay" id="interior-showcase-modal" style="display: none;">
+    <div class="interior-modal-card">
+      <div class="interior-header">
+        <div>
+          <span style="font-size: 10px; color: var(--blood-red); font-weight: bold; letter-spacing: 2px;">CRIME SCENE EVIDENCE · INTERIOR PHOTOGRAPHIC ARCHIVE</span>
+          <h3 id="interior-room-title">RATHORE HAVELI · GRAND ENTRANCE COLONNADE</h3>
+        </div>
+        <button class="interior-close-btn" id="close-interior-modal-btn">×</button>
+      </div>
+
+      <!-- Room Wing Tabs -->
+      <div class="interior-tabs">
+        <button class="int-tab-btn active" data-room="colonnade">1. ENTRANCE COLONNADE</button>
+        <button class="int-tab-btn" data-room="staircase">2. GRAND STAIRCASE</button>
+        <button class="int-tab-btn" data-room="corridor">3. EASTERN CORRIDOR</button>
+        <button class="int-tab-btn" data-room="shrine">4. VAULTED SHRINE / 13TH ROOM</button>
+      </div>
+
+      <div class="interior-photo-frame">
+        <img id="interior-modal-img" src="/assets/haveli_interior.jpg" class="interior-full-img" alt="Rathore Haveli Interior" />
+      </div>
+
+      <div class="interior-photo-caption" id="interior-modal-desc">
+        <strong>ARCHITECTURAL & FORENSIC OBSERVATIONS:</strong><br/>
+        • <strong>Grand Symmetrical Staircase:</strong> 300-year-old Rajput-Mughal carved timber with worn crimson ceremonial runner.<br/>
+        • <strong>Wall Decay & Lime Mortar:</strong> Peeling teal lime plaster reveals the underlying 18th-century masonry and the sealed eastern corridor partition.<br/>
+        • <strong>High Arched Windows:</strong> Rain from the July 1998 monsoon streaks across the glass. Every clock in the adjacent corridor stopped at exactly 02:13 AM.<br/>
+        • <strong>Paranormal Anomaly:</strong> The 13th bell tolled in this hall despite only twelve bells hanging in the courtyard arcade.
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
