@@ -447,6 +447,200 @@ class AudioManager {
     osc.start(t);
     osc.stop(t + 0.16);
   }
+
+  // Paranormal Demonic Whisper & Subterranean Entity Rumble
+  playDemonWhisper() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+
+    // Sub rumble
+    const subOsc = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    subOsc.type = 'sawtooth';
+    subOsc.frequency.setValueAtTime(55, t);
+    subOsc.frequency.linearRampToValueAtTime(38, t + 2.5);
+    subGain.gain.setValueAtTime(0.22, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+
+    const subFilter = this.ctx.createBiquadFilter();
+    subFilter.type = 'lowpass';
+    subFilter.frequency.setValueAtTime(140, t);
+
+    subOsc.connect(subFilter);
+    subFilter.connect(subGain);
+    subGain.connect(this.masterGain);
+    subOsc.start(t);
+    subOsc.stop(t + 2.6);
+
+    // Eerie vocal formant whisper
+    const noiseBuffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 2.2, this.ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.15;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const formant = this.ctx.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.setValueAtTime(650, t);
+    formant.frequency.exponentialRampToValueAtTime(1200, t + 1.2);
+    formant.frequency.exponentialRampToValueAtTime(450, t + 2.2);
+    formant.Q.setValueAtTime(7.0, t);
+
+    const whisperGain = this.ctx.createGain();
+    whisperGain.gain.setValueAtTime(0.01, t);
+    whisperGain.gain.linearRampToValueAtTime(0.18, t + 0.6);
+    whisperGain.gain.exponentialRampToValueAtTime(0.001, t + 2.2);
+
+    noise.connect(formant);
+    formant.connect(whisperGain);
+    whisperGain.connect(this.masterGain);
+    noise.start(t);
+  }
+
+  // Paranormal Spirit Shriek when banished
+  playDemonScream() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(980, t);
+    osc.frequency.exponentialRampToValueAtTime(140, t + 1.2);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2200, t);
+    filter.frequency.exponentialRampToValueAtTime(300, t + 1.2);
+
+    gain.gain.setValueAtTime(0.28, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(t);
+    osc.stop(t + 1.3);
+  }
+
+  // Divine Celestial Burst (Child Talisman Banishment)
+  playDivineBurst() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const chord = [523.25, 659.25, 783.99, 1046.50]; // C Major high celestial chord
+
+    chord.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+
+      gain.gain.setValueAtTime(0.12 / (idx + 1), t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 2.5);
+    });
+  }
+
+  // Tantric Elemental Rune Chime (Agni, Vayu, Jala, Prithvi)
+  playRuneChant(runeIdx = 0) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const frequencies = [261.63, 329.63, 392.00, 523.25]; // C4 (Agni), E4 (Vayu), G4 (Jala), C5 (Prithvi)
+    const baseFreq = frequencies[runeIdx % frequencies.length];
+
+    // Temple bowl modal resonance
+    [1, 2.75, 5.4].forEach((mult, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(baseFreq * mult, t);
+
+      gain.gain.setValueAtTime(0.2 / (i + 1), t);
+      gain.gain.exponentialRampToValueAtTime(0.0005, t + 2.0);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t);
+      osc.stop(t + 2.1);
+    });
+  }
+
+  // Room 13 Blood Seal Shatter (Explosion + Glass + Thunder)
+  playSealShatter() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+
+    // Sub blast
+    const sub = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(120, t);
+    sub.frequency.exponentialRampToValueAtTime(25, t + 1.5);
+    subGain.gain.setValueAtTime(0.4, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+    sub.connect(subGain);
+    subGain.connect(this.masterGain);
+    sub.start(t);
+    sub.stop(t + 1.6);
+
+    // Shattering glass noise burst
+    const noiseBuffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.9, this.ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.25;
+    }
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(3200, t);
+
+    const nGain = this.ctx.createGain();
+    nGain.gain.setValueAtTime(0.35, t);
+    nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+
+    noise.connect(filter);
+    filter.connect(nGain);
+    nGain.connect(this.masterGain);
+    noise.start(t);
+
+    // Heavy echoing thunder
+    setTimeout(() => {
+      this.playThunder(1.6);
+      this.playHaveliBell(1.5, true);
+    }, 150);
+  }
+
+  // Rapid Heartbeat when paranormal manifestation is active
+  playHeartbeat() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+
+    const thump = (offset, vol) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(70, t + offset);
+      osc.frequency.exponentialRampToValueAtTime(35, t + offset + 0.1);
+      gain.gain.setValueAtTime(vol, t + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.12);
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(t + offset);
+      osc.stop(t + offset + 0.14);
+    };
+
+    thump(0.0, 0.3);
+    thump(0.16, 0.22);
+  }
 }
 
 export const audio = new AudioManager();

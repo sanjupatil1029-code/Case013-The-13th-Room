@@ -83,11 +83,11 @@ export class PolaroidCamera {
     const hintEl = this.container.querySelector('#camera-target-hint');
     if (!hintEl) return;
 
-    if (this.scene.player.position.distanceTo(new THREE.Vector3(-3.6, 1.6, -0.4)) < 5.0) {
+    if (this.scene.player.position.distanceTo(new THREE.Vector3(0, 4.0, 1.0)) < 7.0) {
       hintEl.textContent = 'TARGET LOCKED: ANCESTRAL PORTRAIT (SPECTRAL ANOMALY)';
     } else if (this.scene.player.isNear13thWall) {
-      hintEl.textContent = 'TARGET LOCKED: SEALED PARTITION (ACOUSTIC VOID)';
-    } else if (this.scene.player.position.z <= -28) {
+      hintEl.textContent = 'TARGET LOCKED: TANTRIC MAGIC SEAL (ANCIENT BLOOD WARD)';
+    } else if (this.scene.player.currentFloor === 1 && this.scene.player.position.x >= 8 && this.scene.player.position.z <= -6) {
       hintEl.textContent = 'TARGET LOCKED: THE 13TH CHAMBER (PARANORMAL RESIDUE)';
     } else {
       hintEl.textContent = '[EXPOSURE READY · CASE 013]';
@@ -114,13 +114,13 @@ export class PolaroidCamera {
     let label = 'HAVELI INTERIOR';
 
     const playerPos = this.scene.player.position;
-    if (playerPos.distanceTo(new THREE.Vector3(-3.6, 1.6, -0.4)) < 5.5) {
+    if (playerPos.distanceTo(new THREE.Vector3(0, 4.0, 1.0)) < 7.5) {
       anomaly = 'portrait_extra_figure';
       label = 'ANCESTRAL PORTRAIT · EXTRA FIGURE';
     } else if (this.scene.player.isNear13thWall) {
       anomaly = 'eastern_doorway_ghost';
-      label = 'SEALED WALL · IMPOSSIBLE THRESHOLD';
-    } else if (playerPos.z <= -28) {
+      label = 'TANTRIC MAGIC SEAL · BLOOD MANDALA';
+    } else if (this.scene.player.currentFloor === 1 && playerPos.x >= 8 && playerPos.z <= -6) {
       anomaly = 'twin_shadows';
       label = 'ROOM 13 · TWIN SHADOWS';
     }

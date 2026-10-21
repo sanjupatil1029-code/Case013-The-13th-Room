@@ -202,6 +202,28 @@ export class EvidenceBoard {
     tabs.forEach(t => t.classList.remove('active'));
     tabs[0].classList.add('active');
 
+    // Quick shortcut for Meera's Pictorial Spell Diagram
+    let spellBtn = this.container.querySelector('#m-view-spell-btn');
+    if (clue.id === 'clue_02') {
+      if (!spellBtn) {
+        spellBtn = document.createElement('button');
+        spellBtn.id = 'm-view-spell-btn';
+        spellBtn.className = 'pin-string-btn';
+        spellBtn.style.cssText = 'background: #7a2228; border: 1px solid #ffd700; color: #fff; margin-left: 10px; font-weight: bold; cursor: pointer;';
+        spellBtn.textContent = '📜 VIEW PICTORIAL SPELL';
+        spellBtn.onclick = () => {
+          this.close();
+          const meeraModal = document.getElementById('meera-spell-modal');
+          if (meeraModal) meeraModal.style.display = 'flex';
+        };
+        this.container.querySelector('.modal-actions')?.appendChild(spellBtn);
+      } else {
+        spellBtn.style.display = 'inline-block';
+      }
+    } else if (spellBtn) {
+      spellBtn.style.display = 'none';
+    }
+
     this.showLayer('physical');
   }
 
@@ -265,9 +287,13 @@ export class EvidenceBoard {
   }
 
   checkDeductionMatch(idA, idB) {
-    const matchingDeduction = this.deductions.find(d => 
-      !d.solved && ((d.clueA === idA && d.clueB === idB) || (d.clueA === idB && d.clueB === idA))
-    );
+    const matchingDeduction = this.deductions.find(d => {
+      if (d.solved) return false;
+      if ((d.clueA === idA && d.clueB === idB) || (d.clueA === idB && d.clueB === idA)) return true;
+      // Also allow connecting clue_04 (Mason Ramu Statement) with clue_13 (Confession Book) for ded_06
+      if (d.id === 'ded_06' && ((idA === 'clue_04' && idB === 'clue_13') || (idA === 'clue_13' && idB === 'clue_04'))) return true;
+      return false;
+    });
 
     if (matchingDeduction) {
       matchingDeduction.solved = true;

@@ -28,26 +28,49 @@
   <header class="top-hud">
     <div class="case-indicator">
       <span class="case-id">CASE 013</span>
-      <span class="chapter-title" id="current-chapter-title">CH 1: THE GATE THAT CLOSED</span>
-      <span class="location-badge" id="hud-location-name">GRAND ENTRANCE COLONNADE</span>
+      <span class="chapter-title" id="current-chapter-title">LEAD 1 OF 10: THE ENTRANCE POL</span>
+      <span class="location-badge" id="hud-location-name">GRAND ENTRANCE POL & GATES · GROUND FLOOR</span>
     </div>
 
     <div class="clock-watch">
       <div class="clock-digits">02:13 AM</div>
       <div class="clock-date">13 JULY 1998 · RURAL RAJASTHAN</div>
+      <div class="compass-readout" id="hud-nav-compass" style="font-size: 11px; color: #ffb044; margin-top: 4px; font-family: monospace; letter-spacing: 1px;">🧭 LEAD: ENTRANCE POL</div>
     </div>
   </header>
+
+  <!-- Dynamic Room Transition Toast -->
+  <div class="room-splash-toast" id="room-toast" style="display: none;">
+    <div class="room-splash-title" id="room-toast-title">GRAND ENTRANCE POL</div>
+    <div class="room-splash-sub" id="room-toast-sub">GROUND FLOOR · RAJASTHANI HAVELI</div>
+  </div>
 
   <!-- Bottom HUD: Active Case Objective & Forensic Tools -->
   <footer class="bottom-hud">
     <div class="objective-box">
-      <div class="obj-label">CURRENT INVESTIGATION OBJECTIVE</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <span class="obj-label" id="hud-lead-counter">INVESTIGATION LEAD 1 / 10</span>
+        <span class="obj-lead-title" id="hud-lead-title" style="color: #ff9944; font-size: 11px; font-weight: bold; letter-spacing: 1px;">THE ENTRANCE WARNING</span>
+      </div>
       <div class="obj-text" id="hud-objective-text">
-        Search the Entrance Hall for the architectural floor plan and examine the 1998 ancestral portrait.
+        Search the entrance table near the fortified wooden gates for the microcassette recorder.
+      </div>
+      <div id="hud-objective-hint" style="font-size: 11px; color: #a8947e; margin-top: 4px; font-style: italic;">
+        Hint: Listen to the 1998 microcassette left on the carved chowki.
       </div>
     </div>
 
     <div class="quick-toolbar">
+      <button class="tool-pill" id="btn-focus">
+        <span class="key-hint">Q</span>
+        <span>DETECTIVE FOCUS</span>
+      </button>
+
+      <button class="tool-pill" id="btn-haveli-map" style="border-color: #d4af37; color: #ffd700;">
+        <span class="key-hint">M</span>
+        <span>🗺️ HAVELI MAP</span>
+      </button>
+
       <button class="tool-pill" id="btn-board">
         <span class="key-hint">TAB</span>
         <span>EVIDENCE BOARD</span>
@@ -139,6 +162,464 @@
       <em style="color: #ff9999; font-size: 12px;" id="banner-cliffhanger"></em>
     </div>
     <button class="cinematic-btn" id="banner-proceed-btn">BEGIN INVESTIGATION</button>
+  </div>
+
+  <!-- Interactive Architectural Haveli Map Modal [M] -->
+  <div class="haveli-map-modal-overlay" id="haveli-map-modal" style="display: none;">
+    <div class="haveli-map-card">
+      <div class="map-modal-header">
+        <div>
+          <div class="map-stamp">ARCHITECTURAL SURVEY · JULY 1998</div>
+          <h2 class="map-title">RATHORE HAVELI · ARCHITECTURAL BLUEPRINT</h2>
+          <div class="map-subtitle">Twelve rooms officially documented. The 13th chamber was hidden behind the eastern corridor.</div>
+        </div>
+        <div class="map-header-controls">
+          <div class="map-floor-tabs">
+            <button class="map-floor-btn active" id="map-tab-ground" data-floor="0">GROUND FLOOR</button>
+            <button class="map-floor-btn" id="map-tab-second" data-floor="1">SECOND FLOOR</button>
+          </div>
+          <button class="map-close-btn" id="close-map-btn" title="Close Map [M]">×</button>
+        </div>
+      </div>
+
+      <div class="map-modal-body">
+        <!-- SVG Floor Plan Viewport -->
+        <div class="map-viewport-wrapper">
+          <svg id="haveli-svg-map" viewBox="0 0 800 700" class="haveli-blueprint-svg">
+            <!-- Dynamic map rendered by JS -->
+          </svg>
+          <div class="map-compass-rose">
+            <div class="compass-n">N</div>
+            <div class="compass-arrow">▲</div>
+          </div>
+        </div>
+
+        <!-- Map Sidebar Information -->
+        <div class="map-sidebar">
+          <div class="sidebar-block telemetry-block">
+            <div class="sidebar-label">INVESTIGATOR TELEMETRY</div>
+            <div class="telemetry-room" id="map-current-room">ROOM 01: GRAND ENTRANCE POL</div>
+            <div class="telemetry-coords" id="map-current-coords">FLOOR: GROUND · HEADING: NORTH</div>
+          </div>
+
+          <div class="sidebar-block lead-block">
+            <div class="sidebar-label">ACTIVE INVESTIGATION LEAD</div>
+            <div class="map-lead-title" id="map-lead-title">LEAD 1: THE ENTRANCE POL</div>
+            <div class="map-lead-hint" id="map-lead-desc">Examine the microcassette recorder left on the chowki table.</div>
+          </div>
+
+          <div class="sidebar-block legend-block">
+            <div class="sidebar-label">BLUEPRINT LEGEND</div>
+            <div class="legend-item"><span class="legend-dot player-dot"></span> <span>You (Live Investigator Pin & Facing Direction)</span></div>
+            <div class="legend-item"><span class="legend-dot lead-dot"></span> <span>Active Lead Target Beacon</span></div>
+            <div class="legend-item"><span class="legend-dot stair-dot"></span> <span>Central Imperial Staircase (Middle of Courtyard)</span></div>
+            <div class="legend-item"><span class="legend-dot seal-dot"></span> <span>Room 13 Tantric Blood Seal</span></div>
+          </div>
+
+          <div class="sidebar-block room-list-block">
+            <div class="sidebar-label">13 HAVELI ROOMS DIRECTORY</div>
+            <div class="map-rooms-scroll" id="map-rooms-directory">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Solved Detective Breakthrough Modal -->
+  <div class="lead-breakthrough-modal" id="lead-breakthrough-modal" style="display: none;">
+    <div class="lead-modal-card">
+      <div class="lead-modal-header">
+        <span class="lead-badge">INVESTIGATION BREAKTHROUGH</span>
+        <h2 id="breakthrough-title">LEAD SOLVED</h2>
+      </div>
+      <p class="lead-resolution-text" id="breakthrough-resolution"></p>
+      <div class="lead-next-box">
+        <span class="next-tag">NEXT INVESTIGATION LEAD:</span>
+        <p class="next-objective" id="breakthrough-next-obj"></p>
+      </div>
+      <button class="lead-continue-btn" id="breakthrough-close-btn">CONTINUE INVESTIGATION [ENTER]</button>
+    </div>
+  </div>
+
+  <!-- Meera's Diary & Pictorial Tantric Spell Modal -->
+  <div class="spell-modal-overlay" id="meera-spell-modal" style="display: none;">
+    <div class="spell-modal-card">
+      <div class="spell-modal-header">
+        <div>
+          <span class="spell-header-tag">MEERA RATHORE'S SECRET JOURNAL · 14 JULY 1998</span>
+          <h2 class="spell-header-title">THE PICTORIAL TANTRIC UNSEALING SPELL</h2>
+          <div class="spell-header-sub">चित्र तांत्रिक चक्रम् · Breaking the Blood Seal of the 13th Room</div>
+        </div>
+        <div class="spell-tabs">
+          <button class="spell-tab-btn active" id="tab-spell-diagram">📜 PICTORIAL SPELL</button>
+          <button class="spell-tab-btn" id="tab-diary-entry">📖 JULY 14 JOURNAL</button>
+          <button class="spell-close-btn" id="close-spell-modal-btn">×</button>
+        </div>
+      </div>
+
+      <div class="spell-modal-body">
+        <!-- Tab 1: Pictorial Tantric Diagram -->
+        <div class="spell-diagram-view" id="spell-diagram-container">
+          <div class="mandala-diagram-wrapper">
+            <!-- Illustrated Sacred Yantra Diagram -->
+            <div class="pictorial-canvas-box">
+              <div class="ancient-parchment-frame">
+                <div class="yantra-mandala-visual">
+                  <div class="mandala-glow-ring"></div>
+                  <img src="/assets/mandala.png" class="rotating-mandala-bg" alt="Mandala Yantra" />
+                  
+                  <!-- 4 Cardinal Elemental Rune Glyphs -->
+                  <div class="rune-glyph rune-north" data-rune="agni">
+                    <div class="rune-number">①</div>
+                    <div class="rune-symbol">🔥</div>
+                    <div class="rune-name">AGNI (अग्नि)</div>
+                    <div class="rune-mantra">ॐ वह्नि तेजसे नमः</div>
+                    <div class="rune-role">KINDLE SACRED FIRE</div>
+                  </div>
+
+                  <div class="rune-glyph rune-east" data-rune="vayu">
+                    <div class="rune-number">②</div>
+                    <div class="rune-symbol">💨</div>
+                    <div class="rune-name">VAYU (वायु)</div>
+                    <div class="rune-mantra">ॐ वायु प्राणाय नमः</div>
+                    <div class="rune-role">CHANNEL DESERT GALE</div>
+                  </div>
+
+                  <div class="rune-glyph rune-south" data-rune="jala">
+                    <div class="rune-number">③</div>
+                    <div class="rune-symbol">🌊</div>
+                    <div class="rune-name">JALA (जल)</div>
+                    <div class="rune-mantra">ॐ आपः अमृतम नमः</div>
+                    <div class="rune-role">PURIFY MONSOON WATER</div>
+                  </div>
+
+                  <div class="rune-glyph rune-west" data-rune="prithvi">
+                    <div class="rune-number">④</div>
+                    <div class="rune-symbol">🪨</div>
+                    <div class="rune-name">PRITHVI (पृथिवी)</div>
+                    <div class="rune-mantra">ॐ पृथिवी धारिण्यै नमः</div>
+                    <div class="rune-role">ANCHOR FOUNDATION</div>
+                  </div>
+
+                  <!-- Central Key Strike -->
+                  <div class="central-key-bindu">
+                    <div class="key-symbol">🗝️</div>
+                    <div class="key-strike-number">⑤ FINAL STRIKE</div>
+                    <div class="key-name">KAMLA'S BRASS KEY</div>
+                    <div class="key-shastra">ॐ त्रयोदश कपाटम् विदारय स्वाहा</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Side instructions / Pictorial Annotations -->
+            <div class="spell-annotations-sidebar">
+              <div class="spell-annotation-block highlight-block">
+                <span class="anno-label">SACRED RITUAL SEQUENCE</span>
+                <div class="sequence-chain">
+                  <span class="seq-pill">1. 🔥 AGNI</span>
+                  <span class="seq-arrow">➔</span>
+                  <span class="seq-pill">2. 💨 VAYU</span>
+                  <span class="seq-arrow">➔</span>
+                  <span class="seq-pill">3. 🌊 JALA</span>
+                  <span class="seq-arrow">➔</span>
+                  <span class="seq-pill">4. 🪨 PRITHVI</span>
+                  <span class="seq-arrow">➔</span>
+                  <span class="seq-pill gold-pill">5. 🗝️ STRIKE KEY</span>
+                </div>
+              </div>
+
+              <div class="spell-annotation-block">
+                <span class="anno-label">MEERA'S HANDWRITTEN EXPLANATION</span>
+                <p class="anno-text">
+                  "Uncle Vikram believes 40 bags of quick-setting mortar and stone can seal the 13th chamber forever. But the ancient Shastra carved beneath the temple steps reveals the truth:
+                  <strong>No stone barrier can resist the 4 Primal Elements when invoked in divine order.</strong>"
+                </p>
+                <p class="anno-text">
+                  "1. Awaken <strong>AGNI (Fire)</strong> to melt the ancestral blood seal.<br/>
+                  2. Evoke <strong>VAYU (Wind)</strong> to blow away the choking lime dust.<br/>
+                  3. Pour <strong>JALA (Water)</strong> to cleanse Anand's 1963 sacrifice.<br/>
+                  4. Anchor <strong>PRITHVI (Earth)</strong> to fracture the stone partition.<br/>
+                  5. Strike the central Bindu with <strong>Kamla Bai's Mortar-Stained Key</strong>!"
+                </p>
+              </div>
+
+              <div class="spell-annotation-block warning-block">
+                <span class="anno-label">⚠️ WARNING ON SEQUENCE</span>
+                <p class="anno-text-sub">
+                  If the runes are struck out of order, the curse will reject the unbinding and release a demonic shockwave. Follow the exact clockwise elemental sequence!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Meera's Diary July 14 Entry -->
+        <div class="spell-journal-view" id="spell-journal-container" style="display: none;">
+          <div class="journal-paper">
+            <div class="journal-date">14 JULY 1998 · 02:40 AM · MEERA'S PRIVATE BEDCHAMBER</div>
+            <div class="journal-ink-text">
+              <p>"They are downstairs right now. I hear Uncle Vikram shouting at Inspector Devendra in the courtyard. The rain is pounding so hard against the jharokha screens that the courtyard bells are clattering like madmen."</p>
+              <p>"I finally understood what happened in 1963. The baby was not stillborn. Anand was sacrificed because the Rathore astrologer promised 300 years of prosperity if a child of the bloodline was entombed in the thirteenth room. Every 35 years, the haveli demands another soul."</p>
+              <p>"That is why all clocks froze at 2:13 AM. That is why the wall breathed. I am not running away into the storm. I am going into Room 13 to face whatever is waiting there. If you are reading this in the future—holding the lantern in my empty room—take my diagram to the eastern corridor. Break the Blood Seal. Do not let us be forgotten."</p>
+            </div>
+            <div class="journal-signature">— Meera Rathore</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spell-modal-footer">
+        <span class="footer-status">✓ Pictorial Spell Recorded to Evidence Board [TAB]</span>
+        <button class="spell-proceed-btn" id="btn-proceed-to-room13">PROCEED TO EASTERN SEAL [LEAD 10]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Blood Seal Ritual Modal (Room 13) -->
+  <div class="ritual-modal-overlay" id="blood-seal-ritual-modal" style="display: none;">
+    <div class="ritual-modal-card">
+      <div class="ritual-header">
+        <span class="ritual-badge">ANCIENT RAJASTHANI TANTRIC BARRIER</span>
+        <h2 class="ritual-title">BREAK THE BLOOD SEAL OF ROOM 13</h2>
+        <div class="ritual-desc">
+          Channel the 4 Primal Elemental Runes in the sequence revealed by Meera's Diary:
+          <strong style="color: #ffcc55;">AGNI 🔥 ➔ VAYU 💨 ➔ JALA 🌊 ➔ PRITHVI 🪨 ➔ STRIKE KEY 🗝️</strong>
+        </div>
+      </div>
+
+      <!-- Live Sequence Tracker -->
+      <div class="ritual-tracker">
+        <div class="tracker-slot" id="slot-1">
+          <span class="slot-num">1</span>
+          <span class="slot-val">?</span>
+        </div>
+        <div class="tracker-connector">➔</div>
+        <div class="tracker-slot" id="slot-2">
+          <span class="slot-num">2</span>
+          <span class="slot-val">?</span>
+        </div>
+        <div class="tracker-connector">➔</div>
+        <div class="tracker-slot" id="slot-3">
+          <span class="slot-num">3</span>
+          <span class="slot-val">?</span>
+        </div>
+        <div class="tracker-connector">➔</div>
+        <div class="tracker-slot" id="slot-4">
+          <span class="slot-num">4</span>
+          <span class="slot-val">?</span>
+        </div>
+        <div class="tracker-connector">➔</div>
+        <div class="tracker-slot slot-key" id="slot-key">
+          <span class="slot-num">KEY</span>
+          <span class="slot-val">🗝️</span>
+        </div>
+      </div>
+
+      <!-- Feedback Banner -->
+      <div class="ritual-feedback" id="ritual-feedback-msg">
+        Click the first elemental rune to initiate the unsealing chant...
+      </div>
+
+      <!-- Sacred Altar Circle with 4 Clickable Rune Stones & Central Keyhole -->
+      <div class="ritual-altar-circle">
+        <div class="altar-mandala-background">
+          <img src="/assets/mandala.png" class="altar-mandala-img" id="ritual-mandala-spin" alt="Blood Seal Mandala" />
+        </div>
+
+        <!-- 4 Clickable Elemental Rune Stones -->
+        <button class="rune-stone stone-north" id="rune-btn-agni" data-rune="agni">
+          <span class="rune-stone-icon">🔥</span>
+          <span class="rune-stone-title">AGNI</span>
+          <span class="rune-stone-devanagari">अग्नि</span>
+          <span class="rune-stone-mantra">ॐ वह्नि तेजसे नमः</span>
+        </button>
+
+        <button class="rune-stone stone-east" id="rune-btn-vayu" data-rune="vayu">
+          <span class="rune-stone-icon">💨</span>
+          <span class="rune-stone-title">VAYU</span>
+          <span class="rune-stone-devanagari">वायु</span>
+          <span class="rune-stone-mantra">ॐ वायु प्राणाय नमः</span>
+        </button>
+
+        <button class="rune-stone stone-south" id="rune-btn-jala" data-rune="jala">
+          <span class="rune-stone-icon">🌊</span>
+          <span class="rune-stone-title">JALA</span>
+          <span class="rune-stone-devanagari">जल</span>
+          <span class="rune-stone-mantra">ॐ आपः अमृतम नमः</span>
+        </button>
+
+        <button class="rune-stone stone-west" id="rune-btn-prithvi" data-rune="prithvi">
+          <span class="rune-stone-icon">🪨</span>
+          <span class="rune-stone-title">PRITHVI</span>
+          <span class="rune-stone-devanagari">पृथिवी</span>
+          <span class="rune-stone-mantra">ॐ पृथिवी धारिण्यै नमः</span>
+        </button>
+
+        <!-- Central Key Bindu Button -->
+        <button class="central-strike-button locked" id="central-strike-btn" disabled>
+          <div class="strike-lock-icon" id="strike-key-icon">🔒</div>
+          <div class="strike-main-text" id="strike-btn-text">SEAL LOCKED</div>
+          <div class="strike-sub-text">Align All 4 Runes</div>
+        </button>
+      </div>
+
+      <div class="ritual-modal-footer">
+        <button class="ritual-view-diary-btn" id="ritual-view-diary-btn">📖 REVIEW MEERA'S SPELL DIAGRAM</button>
+        <button class="ritual-cancel-btn" id="close-ritual-modal-btn">STEP AWAY FROM BARRIER</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- The 1998 Rathore Confession Book Modal (Puzzled Murder Evidence) -->
+  <div class="confession-modal-overlay" id="confession-book-modal" style="display: none;">
+    <div class="confession-modal-card">
+      <div class="confession-modal-header">
+        <div>
+          <span class="confession-tag">ROOM 13 SACRED ALTAR · 14 JULY 1998 RECOVERED EVIDENCE</span>
+          <h2 class="confession-title">THE KILLER'S ENCRYPTED CONFESSION LEDGER</h2>
+          <div class="confession-subtitle">A secret handwritten record documenting the premeditated entombment of Meera Rathore</div>
+        </div>
+        <button class="confession-close-btn" id="close-confession-modal-btn">×</button>
+      </div>
+
+      <div class="confession-modal-body">
+        <div class="confession-pages-wrapper">
+          <!-- Left Page: The Puzzled Timeline & Coded Testimony -->
+          <div class="ledger-page left-page">
+            <div class="ledger-page-num">FOLIO 13 · JULY 14, 1998</div>
+            <h3 class="ledger-heading">THE MIDNIGHT PROTOCOL</h3>
+            <div class="ledger-entry">
+              <span class="entry-time">02:10 AM</span>
+              <p>Somras laced with Datura poison served to Meera in her chamber. Her vocal cords were paralyzed within minutes to prevent screaming across the courtyard.</p>
+            </div>
+            <div class="ledger-entry">
+              <span class="entry-time">02:13 AM</span>
+              <p>All grandfather clocks in the corridors were intentionally wound back and mechanically jammed at 02:13 to forge an alibi of an electrical surge.</p>
+            </div>
+            <div class="ledger-entry">
+              <span class="entry-time">02:45 AM</span>
+              <p>Kamla Bai was given the outer door key under pretense of letting the girl escape, while the inner partition was permanently barred from the exterior.</p>
+            </div>
+            <div class="ledger-cipher-box">
+              <div class="cipher-label">CRYPTIC CIPHER SCRAWL (FOUND IN MARGIN):</div>
+              <div class="cipher-text">"T.V.S.R. ordered the quicklime. Devendra took ₹50,000 to silence the station ledger. Kamla was the scapegoat."</div>
+            </div>
+          </div>
+
+          <!-- Right Page: The Accusation Details & Forensic Puzzle -->
+          <div class="ledger-page right-page">
+            <div class="ledger-page-num">FOLIO 14 · THE ACCUSATION DETAILS</div>
+            <h3 class="ledger-heading">CROSS-REFERENCE TO IDENTIFY THE KILLER</h3>
+            
+            <p class="puzzle-intro">
+              The author of this ledger documented the crime in fragments. To formally identify the killer, you must cross-reference and connect these contradictory clues on your Evidence Board [TAB]:
+            </p>
+
+            <div class="puzzle-clue-cards">
+              <div class="puzzle-card">
+                <span class="p-card-icon">📜</span>
+                <div>
+                  <strong>CLUE #07: The 3:00 AM Masonry Order</strong>
+                  <p>Stamped with the family patriarch's seal, requisitioning quicklime mortar 47 mins after Meera disappeared.</p>
+                </div>
+              </div>
+
+              <div class="puzzle-card">
+                <span class="p-card-icon">📄</span>
+                <div>
+                  <strong>CLUE #04: The Missing Carbon Statement</strong>
+                  <p>Mason Ramu testified the patriarch stood with a rifle ordering them to brick the wall while screams echoed inside.</p>
+                </div>
+              </div>
+
+              <div class="puzzle-card">
+                <span class="p-card-icon">📖</span>
+                <div>
+                  <strong>CLUE #13: This Confession Ledger</strong>
+                  <p>Documents the 35-year bloodline ritual sacrifice, the Datura poison, and the ₹50,000 police bribe.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="puzzle-directive-box">
+              <div class="directive-tag">INVESTIGATIVE MANDATE</div>
+              <div class="directive-text">
+                <strong>CONNECT THE RED STRING ON THE EVIDENCE BOARD</strong>
+                <p>Pin the red thread between this Confession Book (#13) and the 3:00 AM Masonry Order (#07) to reveal the killer's identity!</p>
+              </div>
+            </div>
+
+            <div class="puzzle-actions">
+              <button class="open-board-from-ledger-btn" id="btn-ledger-open-board">
+                🧶 OPEN EVIDENCE BOARD TO CONNECT THE DOTS [TAB]
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="confession-modal-footer">
+        <span class="ledger-footer-status">📖 Confession Book Pinned to Evidence Board · Connect red line to identify killer</span>
+        <button class="ledger-open-board-btn" id="btn-ledger-footer-open-board">🧶 GO TO EVIDENCE BOARD [TAB]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KILLER IDENTIFIED CINEMATIC BREAKTHROUGH MODAL (Triggered ONLY when red line is connected) -->
+  <div class="killer-identified-overlay" id="killer-identified-modal" style="display: none;">
+    <div class="killer-identified-card">
+      <div class="killer-header-banner">
+        <span class="killer-badge">⚖️ RED LINE CONNECTED · THE DOTS ARE JOINED</span>
+        <h2 class="killer-headline">THE KILLER HAS BEEN IDENTIFIED!</h2>
+        <div class="killer-subheadline">Forensic Deduction 6/6 Formulated · 28-Year Conspiracy Shattered</div>
+      </div>
+
+      <div class="killer-modal-body">
+        <div class="killer-profile-col">
+          <div class="killer-portrait-frame">
+            <img src="/assets/suspect_vikram.jpg" alt="Thakur Vikram Singh Rathore" class="killer-photo" />
+            <div class="killer-stamp">GUILTY OF MURDER</div>
+          </div>
+          <div class="killer-name-tag">
+            <h3>THAKUR VIKRAM SINGH RATHORE</h3>
+            <span class="killer-role">Patriarch of the Rathore Dynasty · Deceased 1998</span>
+          </div>
+        </div>
+
+        <div class="killer-forensic-col">
+          <h4 class="proof-heading">IRREFUTABLE FORENSIC PROOF:</h4>
+          <ul class="killer-proof-list">
+            <li>
+              <span class="proof-icon">🩸</span>
+              <p><strong>02:10 AM — Datura Somras Poisoning:</strong> Served poisoned ritual Somras to paralyze Meera's vocal cords in her bedchamber.</p>
+            </li>
+            <li>
+              <span class="proof-icon">🕰️</span>
+              <p><strong>02:13 AM — Fabricated Power Surge:</strong> Jammed grandfather clocks to forge an alibi that all haveli clocks stopped at once.</p>
+            </li>
+            <li>
+              <span class="proof-icon">📜</span>
+              <p><strong>03:00 AM — Quick-Setting Cement Order:</strong> Requisitioned 40 bags of mortar with his personal wax seal less than 45 minutes after Meera vanished.</p>
+            </li>
+            <li>
+              <span class="proof-icon">🧱</span>
+              <p><strong>04:15 AM — Entombment at Gunpoint:</strong> Mason Ramu testified Vikram held a rifle ordering masons to brick up the screaming girl inside Room 13.</p>
+            </li>
+            <li>
+              <span class="proof-icon">💵</span>
+              <p><strong>Police Cover-Up:</strong> Paid Inspector Devendra ₹50,000 to conceal the statement and frame housekeeper Kamla Bai.</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="killer-modal-footer">
+        <button class="killer-back-board-btn" id="btn-close-killer-modal">🧶 VIEW EVIDENCE BOARD & DOSSIER</button>
+        <button class="killer-confront-btn" id="btn-accuse-vikram-now">⚖️ CONFRONT & ACCUSE THAKUR VIKRAM [CASE RESOLUTION]</button>
+      </div>
+    </div>
   </div>
 
   <!-- Branching Endings Modal -->
